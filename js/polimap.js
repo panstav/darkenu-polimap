@@ -130,19 +130,13 @@
 	var mouse_down = false;
 	var over_link = false;
 
-	function init()
-	{
-		// First - hide the content and move the "loading" tag to the center
-		$("#content").css("visibility", "hidden");
-		center_loading_tag();
+	function setContentEvents(toggle){
 
-		// Hide the scroll bars
-		$("body").css("overflow", "hidden");
+		if (toggle){
 
-		// Set the scroll handlers
-		$(document).mousewheel(
-			function(event, delta)
-			{
+			interactElem = $(document);
+
+			interactElem.on('mousewheel', function(event, delta){
 				// Set the zoom factor
 				var zoom_factor = 1.09;
 				if (delta < 0) zoom_factor = 1 / zoom_factor;
@@ -159,53 +153,92 @@
 				// Redraw
 				zoom_images();
 				event.preventDefault();
-			}
-		);
+			});
+			interactElem.on('mousemove', function(e){
+				if (mouse_down)
+				{
+					is_dragging = true;
+					offset_x += e.pageX - mouse_x;
+					offset_y += e.pageY - mouse_y;
+					move_images();
+				}
+				mouse_x = e.pageX;
+				mouse_y = e.pageY;
+
+				var link = get_link();
+				if ((link == null || link == "") && (over_link))
+				{
+					over_link = false;
+					$("body").css("cursor", "default");
+				}
+				else if (link != null && link != "" && !over_link)
+				{
+					over_link = true;
+					$("body").css("cursor", "pointer");
+				}
+			});
+			interactElem.on('mousedown', function(e){
+				mouse_down = true;
+				$(document).css("cursor", "url('images/cursor/grab.cur'),move");
+
+				e.preventDefault();
+			});
+			interactElem.on('mouseup', function(e){
+
+				mouse_down = false;
+				if (is_dragging){ is_dragging = false } else {
+
+					var eRegion = get_hovered_region();
+
+					var modalHTML = '<div class="close">סגור</div>';
+					modalHTML += '<div class="innerWrap">';
+					modalHTML += '<h3>' + eRegion.orgname + '</h3>';
+					modalHTML += '<a href="' + eRegion.link + '">לינק</a>';
+					modalHTML += '</div>';
+
+					var modalElem = $('.modal');
+
+					setContentEvents(false);
+					modalElem.html(modalHTML).modal(
+						{
+							fadeDuration: 250,
+							fadeDelay: 0.5,
+
+							escapeClose: false,
+							clickClose: false,
+							showClose: false
+						}
+					);
+
+					modalElem.find('.close').on('click', function(){
+						setContentEvents(true);
+						$.modal.close();
+					});
+
+				}
+
+			});
+		} else {
+			interactElem.off('mousewheel');
+			interactElem.off('mousemove');
+			interactElem.off('mousedown');
+			interactElem.off('mouseup');
+		}
+	}
+
+	function init()
+	{
+		// First - hide the content and move the "loading" tag to the center
+		$("#content").css("visibility", "hidden");
+		center_loading_tag();
+
+		// Hide the scroll bars
+		$("body").css("overflow", "hidden");
 
 		// Set the cursor to be regular (IE again... arggggg...)
 		$(document).css("cursor", "url('images/cursor/cursor.ico'),auto");
 
-		// Set the function to save the last mouse x,y
-		$(document).on("mousemove", function(e)
-		{
-			if (mouse_down)
-			{
-				is_dragging = true;
-				offset_x += e.pageX - mouse_x;
-				offset_y += e.pageY - mouse_y;
-				move_images();
-			}
-			mouse_x = e.pageX;
-			mouse_y = e.pageY;
-
-			var link = get_link();
-			if ((link == null || link == "") && (over_link))
-			{
-				over_link = false;
-				$("body").css("cursor", "default");
-			}
-			else if (link != null && link != "" && !over_link)
-			{
-				over_link = true;
-				$("body").css("cursor", "pointer");
-			}
-		});
-		$(document).on("mousedown", function(e)
-		{
-			mouse_down = true;
-			$(document).css("cursor", "url('images/cursor/grab.cur'),move");
-
-			e.preventDefault();
-		});
-		$(document).on("mouseup", function(e){
-
-			mouse_down = false;
-			if (is_dragging){ is_dragging = false } else {
-				console.log('Hovered Region:');
-				console.log(get_hovered_region());
-			}
-
-		});
+		setContentEvents(true);
 
 		var img = $('<img />').attr({ 	'id': 'map',
 			                            'src': 'images/map2.png',
@@ -307,13 +340,6 @@
 			                     left: ($(document).width() - $("#loading").width()) / 2 });
 	}
 
-
 	$(document).ready(init);
-
-	$('[data-role="linker"]').children().on('click', function(){
-
-		alert(this)
-
-	})
 
 })(jQuery);
