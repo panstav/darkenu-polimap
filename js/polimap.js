@@ -122,6 +122,7 @@
 	];
 
 	var zoom = 0.1;
+	var zoomingDevice = false;
 	var offset_y = 0;
 	var offset_x = 0;
 	var mouse_x = 0;
@@ -137,6 +138,9 @@
 			interactElem = $(document);
 
 			interactElem.on('mousewheel', function(event, delta){
+
+				zoomingDevice = true;
+
 				// Set the zoom factor
 				var zoom_factor = 1.09;
 				if (delta < 0) zoom_factor = 1 / zoom_factor;
@@ -185,36 +189,55 @@
 			});
 			interactElem.on('mouseup', function(e){
 
+//				console.log(e);
+//				console.log('X: ' + e.clientX + ', Y: ' + e.clientY);
+				
 				mouse_down = false;
 				if (is_dragging){ is_dragging = false } else {
 
-					var eRegion = get_hovered_region();
+					if ($(e.toElement).is('img#map')){
+						var eRegion = {};
 
-					var modalHTML = '<div class="close">סגור</div>';
-					modalHTML += '<div class="innerWrap">';
-					modalHTML += '<h3>' + eRegion.orgname + '</h3>';
-					modalHTML += '<a href="' + eRegion.link + '">לינק</a>';
-					modalHTML += '</div>';
+						if (!zoomingDevice){
+							var offset = $('img#map').offset();
+							var x = e.clientX - offset.left;
+							var y = e.clientY - offset.top;
 
-					var modalElem = $('.modal');
-
-					setContentEvents(false);
-					modalElem.html(modalHTML).modal(
-						{
-							fadeDuration: 250,
-							fadeDelay: 0.5,
-
-							escapeClose: false,
-							clickClose: false,
-							showClose: false
+							eRegion = get_hovered_region(x,y)
+						} else {
+							eRegion = get_hovered_region();
 						}
-					);
 
-					modalElem.find('.close').on('click', function(){
-						setContentEvents(true);
-						$.modal.close();
-					});
+						if (eRegion){
 
+							console.log(eRegion);
+							
+							var modalHTML = '<div class="close">סגור</div>';
+							modalHTML += '<div class="innerWrap">';
+							modalHTML += '<h3>' + eRegion.orgname + '</h3>';
+							modalHTML += '<a href="' + eRegion.link + '">לינק</a>';
+							modalHTML += '</div>';
+
+							var modalElem = $('.modal');
+
+							setContentEvents(false);
+							modalElem.html(modalHTML).modal(
+								{
+									fadeDuration: 250,
+									fadeDelay: 0.5,
+
+									escapeClose: false,
+									clickClose: false,
+									showClose: false
+								}
+							);
+
+							modalElem.find('.close').on('click', function(){
+								setContentEvents(true);
+								$.modal.close();
+							});
+						}
+					}
 				}
 
 			});
@@ -256,23 +279,56 @@
 		});
 	}
 
-	function get_hovered_region(){
-		var relative_x = (mouse_x - offset_x) / zoom;
-		var relative_y = (mouse_y - offset_y) / zoom;
-
-		var factor = 1;
-
+	function get_hovered_region(x, y){
 		var regionDefaults = { w: 140, h: 140 };
 
-		for (var i = 0; i < regions.length; i++){
-			var currentRegion = $.extend({}, regionDefaults, regions[i].region);
+		if (x && y){
 
-			if (relative_x > currentRegion.x * factor &&
-			    relative_x < (currentRegion.x + currentRegion.w) * factor &&
-			    relative_y > currentRegion.y * factor &&
-			    relative_y < (currentRegion.y + currentRegion.h) * factor)
-			{
-				return regions[i]
+			var imgMap = $('img#map');
+			var ratio = imgMap.data('original-width') / imgMap.width();
+
+			var rationedX = x * ratio;
+			var rationedY = y * ratio;
+
+			var corespondingRegion = undefined;
+
+			$.each(regions, function(){
+				var sizedRegionX = this.region.x + regionDefaults.w;
+				var sizedRegionY = this.region.y + regionDefaults.h;
+
+				if (this.region.x < rationedX && rationedX < sizedRegionX){
+					if (this.region.y < rationedY && rationedY < sizedRegionY){
+
+						console.log(this.region.x);
+						console.log(rationedX);
+						console.log(sizedRegionX);
+
+						corespondingRegion = this;
+
+						return false
+					}
+				}
+			});
+
+			return corespondingRegion || null
+
+		} else {
+			var relative_x = (mouse_x - offset_x
+				                 )/zoom;
+			var relative_y = (mouse_y - offset_y
+				                 )/zoom;
+
+			var factor = 1;
+
+			for (var i = 0; i < regions.length; i++){
+				var currentRegion = $.extend({}, regionDefaults, regions[i].region);
+
+				if (relative_x > currentRegion.x*factor && relative_x < (currentRegion.x + currentRegion.w
+					                                                        )*factor && relative_y > currentRegion.y*factor &&
+				    relative_y < (currentRegion.y + currentRegion.h
+					                 )*factor){
+					return regions[i]
+				}
 			}
 		}
 	}
