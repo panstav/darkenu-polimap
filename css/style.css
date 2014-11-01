@@ -17,6 +17,8 @@ body {
       clear: both; }
   .profile.modal h3.orange, .profile.modal .link.orange {
     background-color: #f7921e; }
+  .profile.modal h3.purple, .profile.modal .link.purple {
+    background-color: #d1b2e8; }
   .profile.modal h3 {
     margin: 0;
     padding: 7px 12px;
