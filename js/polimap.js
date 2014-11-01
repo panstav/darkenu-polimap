@@ -1,8 +1,47 @@
 // TODO: Grunt-Minify
+// TODO: keen($('a'))
 
 (function($){
 
 	var regions = [
+		{
+			region: { x: 1159, y: 479 },
+			name: 'חדר מצב',
+			desc: ['ערוץ התקשורת האלטרנטיבי של המאבק החברתי.'],
+			color: 'orange',
+
+			link: [
+				{
+					url: 'http://www.facebook.com/j14live'
+				}
+			],
+
+			contact: [
+				{
+					url: 'http://www.facebook.com/messages/j14live'
+				}
+			]
+		},{
+			region: { x: 764, y: 346 },
+			name: 'מגפון',
+			desc: ['מגפון - עיתון העיתונאים - הוא מיזם תוכן עיתונאי אינטרנטי.', 'עיתון מגפון הוקם ומנוהל במתכונת של קואופרטיב - בבעלות משותפת של העובדים בו כתבים, כותבים ועורכים, צלמים ומעצבים, בעלי טורים, אנשי שטח ומשרד, אנשי מסחר ומודעות ועוד'],
+			color: 'orange',
+
+			link: [
+				{
+					url: 'http://www.megafon-news.co.il/'
+				}
+			],
+
+			contact: [
+				{
+					url: 'http://megafon-news.co.il/contact.html'
+				}
+			]
+		}
+	];
+
+	var oldRegions = [
 		{ "region": {"x": 1717, "y": 1442}, "link": "http://uti.org.il/", "orgname": "UTI"},
 		{ "region": {"x": 1768, "y": 1614}, "link": "https://www.facebook.com/groups/104843316297576/", "orgname": "תגידו את האמת!"},
 		{ "region": {"x": 1990, "y": 2032}, "link": "http://www.kvish40.co.il/", "orgname": "כביש 40"},
@@ -188,9 +227,6 @@
 				e.preventDefault();
 			});
 			interactElem.on('mouseup', function(e){
-
-//				console.log(e);
-//				console.log('X: ' + e.clientX + ', Y: ' + e.clientY);
 				
 				mouse_down = false;
 				if (is_dragging){ is_dragging = false } else {
@@ -210,12 +246,24 @@
 
 						if (eRegion){
 
-							console.log(eRegion);
-							
 							var modalHTML = '<div class="close">סגור</div>';
+							modalHTML += '<h3 class="' + eRegion.color + '">' + eRegion.name + '</h3>';
 							modalHTML += '<div class="innerWrap">';
-							modalHTML += '<h3>' + eRegion.orgname + '</h3>';
-							modalHTML += '<a href="' + eRegion.link + '">לינק</a>';
+
+							$.each(eRegion.desc, function(){
+								modalHTML += '<p class="desc">' + this + '</p>';
+							});
+
+							if (eRegion.link){
+								var facebook = eRegion.link.indexOf('www.facebook') >= 0;
+								var type = eRegion.irgun ? 'אירגון' : 'יוזמה';
+
+								modalHTML += '<a href="' + eRegion.link + '" target="_blank" ';
+								modalHTML += 'class="link ' + eRegion.color + ' ' + (facebook ? 'facebook' : 'homepage') + '">';
+								modalHTML += (facebook ? 'לעמוד ה' : 'לאתר ה') + type;
+								modalHTML += '</a>'
+							}
+
 							modalHTML += '</div>';
 
 							var modalElem = $('.modal');
@@ -223,9 +271,8 @@
 							setContentEvents(false);
 							modalElem.html(modalHTML).modal(
 								{
-									fadeDuration: 250,
+									fadeDuration: 500,
 									fadeDelay: 0.5,
-
 									escapeClose: false,
 									clickClose: false,
 									showClose: false
@@ -264,7 +311,7 @@
 		setContentEvents(true);
 
 		var img = $('<img />').attr({ 	'id': 'map',
-			                            'src': 'images/map2.png',
+			                            'src': 'images/map3.jpg',
 																	'usemap': '#a',
 			                            'data-x': 0,
 			                            'data-y': 0
@@ -280,7 +327,7 @@
 	}
 
 	function get_hovered_region(x, y){
-		var regionDefaults = { w: 140, h: 140 };
+		var regionDefaults = { w: 70, h: 70 };
 
 		if (x && y){
 
@@ -298,13 +345,7 @@
 
 				if (this.region.x < rationedX && rationedX < sizedRegionX){
 					if (this.region.y < rationedY && rationedY < sizedRegionY){
-
-						console.log(this.region.x);
-						console.log(rationedX);
-						console.log(sizedRegionX);
-
 						corespondingRegion = this;
-
 						return false
 					}
 				}

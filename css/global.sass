@@ -1,19 +1,78 @@
-.modal, .modal .blocker
+@mixin moz-webkit($prop,$value)
+	-moz-#{$prop}: $value
+	-webkit-#{$prop}: $value
+	#{$prop}: $value
+
+@mixin radius($px, $dir: all)
+	@include moz-webkit(border-radius,$px)
+
+@mixin clearFix()
+	&:after
+		content: ''
+		display: table
+		clear: both
+
+$BackgroundColor: #231f20
+
+$Orange: #f7921e
+
+body
+	background-color: $BackgroundColor
+
+.modal, .jquery-modal.blocker
 	cursor: default
 
 .profile.modal
+	overflow: hidden
+
 	direction: rtl
-	padding: 12px
+	font-family: Arial, sans-serif
+	padding: 0
 
 	.innerWrap
-		padding: 18px
+		@include clearFix
+		padding: 13px 18px
+
+	h3, .link
+		&.orange
+			background-color: $Orange
+
+	h3
+		margin: 0
+		padding: 7px 12px
+
+		text-shadow: -1px 1px 1px rgba(0, 0, 0, 0.4)
+		color: white
+
+	p.desc
+		margin: 5px 0 10px
+		&:last-of-type
+			margin-bottom: 35px
+
+	.link
+		@include radius(3px)
+
+		float: left
+		display: inline-block
+		margin: 0
+		padding: .5em 1.5em
+		cursor: pointer
+		border: none
+
+		line-height: 1
+		color: #FFF
+		text-decoration: none
 
 	.close
 		float: left
+		margin: 11px
 
-		color: #9f9f9f
+		font:
+			family: monospace
+			size: 12px
+		color: white
 		&:hover
-			color: #9f3d45
+			cursor: pointer
 
 #content
 	width: 100%
@@ -25,19 +84,14 @@
 	top: 500px
 	width: 350px
 	height: 180px
-	border-style: solid
-	border: 1px black
+	border : 1px solid
 	color: white
 
 
 #progress_background
 	width: 80%
-	border-style: solid
-	border-color: black
-	border-width: 1px
+	border : 1px solid $BackgroundColor
 
 #progress
 	width: 80%
-	border-style: solid
-	border-color: black
-	border-width: 1px
+	border : 1px solid $BackgroundColor
