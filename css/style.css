@@ -21,6 +21,14 @@ body {
     background-color: #d1b2e8; }
   .profile.modal h3.blue, .profile.modal .link.blue {
     background-color: #90bac7; }
+  .profile.modal h3.green, .profile.modal .link.green {
+    background-color: #71bf45; }
+  .profile.modal h3.aqua, .profile.modal .link.aqua {
+    background-color: #00b0f0; }
+  .profile.modal h3.yellow, .profile.modal .link.yellow {
+    background-color: yellow; }
+  .profile.modal h3.bordo, .profile.modal .link.bordo {
+    background-color: #f1553e; }
   .profile.modal h3 {
     margin: 0;
     padding: 7px 12px;
@@ -55,7 +63,7 @@ body {
 #content {
   width: 100%;
   height: 100%;
-  visibility: none; }
+  visibility: hidden; }
 
 #loading {
   position: absolute;

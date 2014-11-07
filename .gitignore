@@ -1,1 +1,19 @@
+# Includes
+images/
+**/jquery.modal.min.js
+**/jquery.modal.css
+**/mousewheel.js
+
+# NPM Files
+/node_modules
+npm-debug.log
+
+# Webstorm Files
 /.idea
+
+# Sass
+/.sass-cache
+
+# Minified Versions
+style.min.css
+polimap.min.js
