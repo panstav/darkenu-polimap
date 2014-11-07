@@ -8,6 +8,10 @@ images/
 /node_modules
 npm-debug.log
 
+# Generated via Grunt
+/index.html
+/local.html
+
 # Webstorm Files
 /.idea
 
