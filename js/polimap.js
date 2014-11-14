@@ -1155,7 +1155,7 @@
 		setContentEvents(true);
 
 		var img = $('<img />').attr({ 	'id': 'map',
-			                            'src': 'images/map3.jpg',
+			                            'src': 'images/map5.jpg',
 																	'usemap': '#a',
 			                            'data-x': 0,
 			                            'data-y': 0
